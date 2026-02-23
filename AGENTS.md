@@ -1,6 +1,10 @@
 
 Default to using Bun instead of Node.js.
 
+## Git worktrees
+
+- Manage new git worktrees under the `.worktrees/` directory in this repository.
+
 - Use `bun <file>` instead of `node <file>` or `ts-node <file>`
 - Use `bun test` instead of `jest` or `vitest`
 - Use `bun build <file.html|file.ts|file.css>` instead of `webpack` or `esbuild`
