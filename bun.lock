@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "illbeing",
+      "name": "being-better",
       "devDependencies": {
         "typescript": "^5.9.2",
         "vite": "^7.1.3",
