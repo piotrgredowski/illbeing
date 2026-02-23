@@ -1,4 +1,5 @@
 import { deleteCookie, readCookie, setCookie } from "../../session/cookies";
+import { getEnvVar } from "../../config/env";
 import type { AuthState, RatingEntry, RatingsRange, RatingsStoreAdapter } from "../types";
 
 type GoogleTokenResponse = {
@@ -15,7 +16,7 @@ type StoredAuthSession = {
   expiresAtMs: number;
 };
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
+const GOOGLE_CLIENT_ID = getEnvVar("VITE_GOOGLE_CLIENT_ID") ?? "";
 const SHEET_TITLE = "being better";
 const DATA_SHEET_TITLE = "data";
 const CONFIG_SHEET_TITLE = "config";
