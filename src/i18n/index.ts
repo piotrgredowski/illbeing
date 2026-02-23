@@ -24,7 +24,7 @@ export type I18nKey =
   | "status.chartLoadFailed"
   | "status.generatingChart"
   | "status.chartUpdated"
-  | "status.browserStorageUnavailable"
+  | "status.localApiUnavailable"
   | "status.appInstalled"
   | "status.installAccepted"
   | "status.installDismissed"
@@ -90,7 +90,7 @@ const I18N: Record<Locale, I18nDict> = {
     "status.missingClientId": "Ustaw VITE_GOOGLE_CLIENT_ID w środowisku (np. .env.local).",
     "status.clickSignIn": "Kliknij '{signIn}'.",
     "status.googleClientInitFailed": "Nie udało się uruchomić klienta Google API.",
-    "status.connected": "Połączono. Możesz zapisywać dane.",
+    "status.connected": "Połączono z Google. Możesz zapisywać dane.",
     "status.sheetInitFailed": "Logowanie powiodło się, ale inicjalizacja arkusza nie powiodła się.",
     "status.authRejected": "Autoryzacja Google została odrzucona lub przerwana.",
     "status.oauthNotReady": "Klient OAuth nie jest gotowy.",
@@ -104,7 +104,7 @@ const I18N: Record<Locale, I18nDict> = {
     "status.chartLoadFailed": "Nie udało się odczytać danych do wykresu.",
     "status.generatingChart": "Generowanie wykresu z ostatniego tygodnia...",
     "status.chartUpdated": "Wykres zaktualizowany.",
-    "status.browserStorageUnavailable": "Pamięć przeglądarki jest niedostępna.",
+    "status.localApiUnavailable": "Lokalne API jest niedostępne. Uruchom backend Bun.",
     "status.appInstalled": "Aplikacja jest już zainstalowana.",
     "status.installAccepted": "Instalacja rozpoczęta.",
     "status.installDismissed": "Instalacja anulowana.",
@@ -163,7 +163,7 @@ const I18N: Record<Locale, I18nDict> = {
     "status.missingClientId": "Set VITE_GOOGLE_CLIENT_ID in the environment (for example, .env.local).",
     "status.clickSignIn": "Click '{signIn}'.",
     "status.googleClientInitFailed": "Failed to initialize the Google API client.",
-    "status.connected": "Connected. You can save data now.",
+    "status.connected": "Connected to Google. You can save data now.",
     "status.sheetInitFailed": "Sign in succeeded, but spreadsheet initialization failed.",
     "status.authRejected": "Google authorization was rejected or interrupted.",
     "status.oauthNotReady": "OAuth client is not ready.",
@@ -177,7 +177,7 @@ const I18N: Record<Locale, I18nDict> = {
     "status.chartLoadFailed": "Failed to load data for the chart.",
     "status.generatingChart": "Generating chart for the last week...",
     "status.chartUpdated": "Chart updated.",
-    "status.browserStorageUnavailable": "Browser storage is unavailable.",
+    "status.localApiUnavailable": "Local API is unavailable. Start the Bun backend.",
     "status.appInstalled": "The app is already installed.",
     "status.installAccepted": "Installation started.",
     "status.installDismissed": "Installation was dismissed.",

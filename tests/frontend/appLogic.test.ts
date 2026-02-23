@@ -34,8 +34,8 @@ test("boot failure status mapping keeps adapter-specific messaging", () => {
     isError: true,
   });
 
-  expect(resolveInitFailureStatus("browser", new Error("offline"))).toEqual({
-    key: "status.browserStorageUnavailable",
+  expect(resolveInitFailureStatus("local_api", new Error("offline"))).toEqual({
+    key: "status.localApiUnavailable",
     isError: true,
   });
 

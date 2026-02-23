@@ -24,8 +24,8 @@ export function resolveInitFailureStatus(backend: DataBackend, error: unknown): 
     return { key: "status.missingClientId", isError: true };
   }
 
-  if (backend === "browser") {
-    return { key: "status.browserStorageUnavailable", isError: true };
+  if (backend === "local_api") {
+    return { key: "status.localApiUnavailable", isError: true };
   }
 
   return { key: "status.googleClientInitFailed", isError: true };
