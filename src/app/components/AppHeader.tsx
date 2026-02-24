@@ -14,6 +14,7 @@ export function AppHeader(props: {
   isConnected: boolean;
   showSignIn: boolean;
   signInLabel: string;
+  accountLabel: string;
   signInDisabled: boolean;
   activeTab: "entry" | "week" | "settings" | "hello";
   entryLabel: string;
@@ -91,7 +92,7 @@ export function AppHeader(props: {
               onClick={props.onInstall}
             >
               <span class="install-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
+                <svg viewBox="0 0 24 24">
                   <path d="M12 3v10" />
                   <path d="m8 9 4 4 4-4" />
                   <path d="M4 15v4h16v-4" />
@@ -201,10 +202,10 @@ export function AppHeader(props: {
           </div>
 
           {props.isConnected && (
-            <div class="menu-item menu-status" aria-label={props.signInLabel}>
+            <div class="menu-item menu-status" aria-label={props.accountLabel}>
               <span class="menu-label">{props.t("menu.account")}</span>
               <span class="status-dot" aria-hidden="true" />
-              <span class="menu-value">{props.signInLabel}</span>
+              <span class="menu-value">{props.accountLabel}</span>
             </div>
           )}
 

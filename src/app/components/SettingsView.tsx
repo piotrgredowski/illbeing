@@ -6,6 +6,8 @@ import type { ThemePreference } from "../../theme";
 export function SettingsView(props: {
   visible: boolean;
   languageLabel: string;
+  defaultPreferenceHelpLabel: string;
+  defaultPreferenceHelpText: string;
   themeLabel: string;
   storageLocationLabel: string;
   storageGoogleLabel: string;
@@ -52,6 +54,12 @@ export function SettingsView(props: {
               <div class="setting-row">
                 <label for="settings-language" class="label">
                   {props.languageLabel}
+                  <span class="setting-help" tabindex="0" aria-label={props.defaultPreferenceHelpLabel}>
+                    ?
+                    <span class="setting-help-tooltip" role="tooltip">
+                      {props.defaultPreferenceHelpText}
+                    </span>
+                  </span>
                 </label>
                 <select id="settings-language" class="locale-select setting-control" value={props.locale} onChange={props.onLocaleChange}>
                   {props.supportedLocales.map((item) => (
@@ -65,6 +73,12 @@ export function SettingsView(props: {
               <div class="setting-row">
                 <label for="settings-theme" class="label">
                   {props.themeLabel}
+                  <span class="setting-help" tabindex="0" aria-label={props.defaultPreferenceHelpLabel}>
+                    ?
+                    <span class="setting-help-tooltip" role="tooltip">
+                      {props.defaultPreferenceHelpText}
+                    </span>
+                  </span>
                 </label>
                 <select id="settings-theme" class="locale-select setting-control" value={props.themePreference} onChange={props.onThemePreferenceChange}>
                   <option value="light">{props.themeOptionLightLabel}</option>
@@ -134,25 +148,22 @@ export function SettingsView(props: {
                 onInput={props.onReminderTimeChange}
               />
             </div>
+            <div class="setting-row setting-row-divider">
+              <label for="settings-notifications-enabled" class="label">{props.reminderPermissionLabel}</label>
+              <input
+                id="settings-notifications-enabled"
+                class="setting-toggle"
+                type="checkbox"
+                checked={props.notificationsEnabled}
+                disabled={props.notificationsUnsupported}
+                onChange={props.onNotificationsEnabledChange}
+              />
+            </div>
+            <div class={`setting-row setting-row-divider${props.notificationsUnsupported ? " setting-row-disabled" : ""}`}>
+              <p class="setting-note">{props.reminderPermissionStateLabel}</p>
+            </div>
           </div>
         ) : null}
-
-        <div class="setting-block">
-          <div class="setting-row">
-            <label for="settings-notifications-enabled" class="label">{props.reminderPermissionLabel}</label>
-            <input
-              id="settings-notifications-enabled"
-              class="setting-toggle"
-              type="checkbox"
-              checked={props.notificationsEnabled}
-              disabled={props.notificationsUnsupported}
-              onChange={props.onNotificationsEnabledChange}
-            />
-          </div>
-          <div class={`setting-row setting-row-divider${props.notificationsUnsupported ? " setting-row-disabled" : ""}`}>
-            <p class="setting-note">{props.reminderPermissionStateLabel}</p>
-          </div>
-        </div>
       </div>
     </section>
   );

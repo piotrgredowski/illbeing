@@ -1107,6 +1107,7 @@ export function App() {
               isConnected={isReady()}
               showSignIn={!isReady()}
               signInLabel={t(resolveSignInLabelKey(isReady()))}
+              accountLabel={storageGoogleAccountLabel() ?? t(resolveSignInLabelKey(isReady()))}
               signInDisabled={isReady() || !signInEnabled()}
               activeTab={routeToTab(activeRoute())}
               entryLabel={t("tabs.entry")}
@@ -1236,6 +1237,8 @@ export function App() {
             <SettingsView
               visible={activeRoute() === "settings"}
               languageLabel={t("settings.language")}
+              defaultPreferenceHelpLabel={t("settings.defaultPreferenceHelpLabel")}
+              defaultPreferenceHelpText={t("settings.defaultPreferenceHelpText")}
               themeLabel={t("settings.theme")}
               storageLocationLabel={t("settings.storageLocation")}
               storageGoogleLabel={t("backend.google")}

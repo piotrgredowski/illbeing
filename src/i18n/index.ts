@@ -138,6 +138,8 @@ export type I18nKey =
   | "footer.description"
   | "footer.github"
   | "settings.language"
+  | "settings.defaultPreferenceHelpLabel"
+  | "settings.defaultPreferenceHelpText"
   | "settings.theme"
   | "settings.storageLocation"
   | "settings.openDriveFile"
@@ -296,6 +298,9 @@ const I18N: Record<Locale, I18nDict> = {
     "footer.description": "Krótka aplikacja do codziennego check-inu samopoczucia i śledzenia trendów.",
     "footer.github": "Zobacz na GitHubie",
     "settings.language": "Domyślny język",
+    "settings.defaultPreferenceHelpLabel": "Informacja o ustawieniu domyślnym",
+    "settings.defaultPreferenceHelpText":
+      "To ustawienie będzie używane domyślnie na nowych urządzeniach, na których zalogujesz się tym kontem.",
     "settings.theme": "Domyślny motyw",
     "settings.storageLocation": "Miejsce zapisu danych",
     "settings.openDriveFile": "Otwórz plik na Dysku Google",
@@ -447,6 +452,9 @@ const I18N: Record<Locale, I18nDict> = {
     "footer.description": "A lightweight app for daily wellbeing check-ins and trend tracking.",
     "footer.github": "View on GitHub",
     "settings.language": "Default language",
+    "settings.defaultPreferenceHelpLabel": "Default setting information",
+    "settings.defaultPreferenceHelpText":
+      "This setting will be used by default on new devices where you sign in with this account.",
     "settings.theme": "Default theme",
     "settings.storageLocation": "Data storage location",
     "settings.openDriveFile": "Open file on Google Drive",

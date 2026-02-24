@@ -672,6 +672,58 @@ select {
   font-size: 1.1rem;
 }
 
+.setting-row .label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.setting-help {
+  position: relative;
+  display: inline-flex;
+  width: 1.2rem;
+  height: 1.2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--panel-soft);
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+  cursor: help;
+  flex: 0 0 auto;
+}
+
+.setting-help-tooltip {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 0.35rem);
+  width: min(320px, calc(100vw - 2.5rem));
+  padding: 0.55rem 0.65rem;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--panel) 95%, transparent);
+  color: var(--text);
+  font-size: 0.84rem;
+  font-weight: 500;
+  line-height: 1.35;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 0.16s ease, transform 0.16s ease, visibility 0.16s ease;
+  pointer-events: none;
+  z-index: 12;
+}
+
+.setting-help:hover .setting-help-tooltip,
+.setting-help:focus-visible .setting-help-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
 .slider-row {
   display: flex;
   align-items: center;
