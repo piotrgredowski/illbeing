@@ -45,6 +45,16 @@ type AppRoute = "hello" | "log-today" | "past-data" | "settings";
 type IntensityKey = "energy" | "stress" | "anxiety" | "joy";
 
 const BACKEND_COOKIE_NAME = "being_better_data_backend";
+const BASE_PATH = (() => {
+  const baseUrl = (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env?.BASE_URL?.trim();
+  if (!baseUrl || baseUrl === "/") {
+    return "";
+  }
+
+  const withLeadingSlash = baseUrl.startsWith("/") ? baseUrl : `/${baseUrl}`;
+  const normalized = withLeadingSlash.replace(/\/+$/, "");
+  return normalized === "" ? "" : normalized;
+})();
 
 function isStandaloneDisplay(): boolean {
   return window.matchMedia("(display-mode: standalone)").matches || (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
@@ -78,8 +88,30 @@ function normalizePathname(pathname: string): string {
   return pathname;
 }
 
-function routeFromPathname(pathname: string): AppRoute {
+function stripBasePath(pathname: string): string {
   const normalized = normalizePathname(pathname);
+  if (!BASE_PATH) {
+    return normalized;
+  }
+
+  if (normalized === BASE_PATH) {
+    return "/";
+  }
+  if (normalized.startsWith(`${BASE_PATH}/`)) {
+    return normalized.slice(BASE_PATH.length);
+  }
+  return normalized;
+}
+
+function appPath(pathname: string): string {
+  if (!BASE_PATH) {
+    return pathname;
+  }
+  return `${BASE_PATH}${pathname}`;
+}
+
+function routeFromPathname(pathname: string): AppRoute {
+  const normalized = stripBasePath(pathname);
   if (normalized === "/hello") {
     return "hello";
   }
@@ -96,7 +128,7 @@ function routeFromPathname(pathname: string): AppRoute {
 }
 
 function isKnownPathname(pathname: string): boolean {
-  const normalized = normalizePathname(pathname);
+  const normalized = stripBasePath(pathname);
   return normalized === "/hello" || normalized === "/log-today" || normalized === "/past-data" || normalized === "/settings";
 }
 
@@ -665,13 +697,13 @@ export function App() {
 
   createEffect(() => {
     if (!isKnownPathname(location.pathname)) {
-      navigate("/hello", { replace: true });
+      navigate(appPath("/hello"), { replace: true });
     }
   });
 
   createEffect(() => {
     if (activeRoute() === "hello" && selectedBackend() !== null) {
-      navigate("/log-today", { replace: true });
+      navigate(appPath("/log-today"), { replace: true });
     }
   });
 
@@ -706,7 +738,7 @@ export function App() {
   };
 
   const navigateToRoute = (route: AppRoute): void => {
-    navigate(pathForRoute(route));
+    navigate(appPath(pathForRoute(route)));
   };
 
   const handleEntryTab = (): void => {
