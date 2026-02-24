@@ -26,6 +26,7 @@ export function SettingsView(props: {
   themePreference: ThemePreference;
   storageBackend: DataBackend;
   storageBackendValue: DataBackend;
+  showReminderSettings: boolean;
   reminderEnabled: boolean;
   reminderTime: string;
   notificationsEnabled: boolean;
@@ -94,33 +95,35 @@ export function SettingsView(props: {
           <p class="status setting-status">{props.storageHelpText}</p>
         </div>
 
-        <div class="setting-block">
-          <div class="setting-row">
-            <label for="settings-reminder-enabled" class="label">
-              {props.reminderEnabledLabel}
-            </label>
-            <input
-              id="settings-reminder-enabled"
-              class="setting-toggle"
-              type="checkbox"
-              checked={props.reminderEnabled}
-              onChange={props.onReminderEnabledChange}
-            />
+        {props.showReminderSettings ? (
+          <div class="setting-block">
+            <div class="setting-row">
+              <label for="settings-reminder-enabled" class="label">
+                {props.reminderEnabledLabel}
+              </label>
+              <input
+                id="settings-reminder-enabled"
+                class="setting-toggle"
+                type="checkbox"
+                checked={props.reminderEnabled}
+                onChange={props.onReminderEnabledChange}
+              />
+            </div>
+            <div class={`setting-row setting-row-divider${props.reminderEnabled ? "" : " setting-row-disabled"}`}>
+              <label for="settings-reminder-time" class="label">
+                {props.reminderTimeLabel}
+              </label>
+              <input
+                id="settings-reminder-time"
+                class="setting-control"
+                type="time"
+                value={props.reminderTime}
+                disabled={!props.reminderEnabled}
+                onInput={props.onReminderTimeChange}
+              />
+            </div>
           </div>
-          <div class={`setting-row setting-row-divider${props.reminderEnabled ? "" : " setting-row-disabled"}`}>
-            <label for="settings-reminder-time" class="label">
-              {props.reminderTimeLabel}
-            </label>
-            <input
-              id="settings-reminder-time"
-              class="setting-control"
-              type="time"
-              value={props.reminderTime}
-              disabled={!props.reminderEnabled}
-              onInput={props.onReminderTimeChange}
-            />
-          </div>
-        </div>
+        ) : null}
 
         <div class="setting-block">
           <div class="setting-row">

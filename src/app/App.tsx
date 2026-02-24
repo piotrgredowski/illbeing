@@ -510,6 +510,12 @@ export function App() {
   });
 
   createEffect(() => {
+    if (!isInstalled() && reminderEnabled()) {
+      syncReminderSettings(false, reminderTime());
+    }
+  });
+
+  createEffect(() => {
     if (!isKnownPathname(location.pathname)) {
       navigate("/hello", { replace: true });
     }
@@ -615,6 +621,9 @@ export function App() {
   };
 
   const handleReminderEnabledChange = (event: Event): void => {
+    if (!isInstalled()) {
+      return;
+    }
     const input = event.currentTarget as HTMLInputElement;
     syncReminderSettings(input.checked, reminderTime());
   };
@@ -903,6 +912,7 @@ export function App() {
               themePreference={themePreference()}
               storageBackend={selectedBackend() ?? "google"}
               storageBackendValue={settingsBackendDraft() ?? selectedBackend() ?? "google"}
+              showReminderSettings={isInstalled()}
               reminderEnabled={reminderEnabled()}
               reminderTime={reminderTime()}
               notificationsEnabled={notificationPermission() === "granted"}
