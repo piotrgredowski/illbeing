@@ -1,4 +1,5 @@
-import { createEffect, createSignal, onCleanup, onMount, Show } from "solid-js";
+import { useLocation, useNavigate } from "@solidjs/router";
+import { createEffect, createMemo, createSignal, onCleanup, onMount, Show } from "solid-js";
 import { buildLastWeekSeries, type RatingPoint } from "../chart/weekly";
 import { getEnvVar } from "../config/env";
 import { createAdapter, resolveDataBackend, type DataBackend } from "../data/createAdapter";
@@ -50,8 +51,63 @@ function detectNotificationPermissionState(): NotificationPermission | "unsuppor
 }
 
 const BACKEND_COOKIE_NAME = "being_better_data_backend";
+type AppRoute = "hello" | "log-today" | "past-data" | "settings";
+
+function normalizePathname(pathname: string): string {
+  if (pathname.length > 1 && pathname.endsWith("/")) {
+    return pathname.slice(0, -1);
+  }
+  return pathname;
+}
+
+function routeFromPathname(pathname: string): AppRoute {
+  const normalized = normalizePathname(pathname);
+  if (normalized === "/hello") {
+    return "hello";
+  }
+  if (normalized === "/log-today") {
+    return "log-today";
+  }
+  if (normalized === "/past-data") {
+    return "past-data";
+  }
+  if (normalized === "/settings") {
+    return "settings";
+  }
+  return "hello";
+}
+
+function isKnownPathname(pathname: string): boolean {
+  const normalized = normalizePathname(pathname);
+  return normalized === "/hello" || normalized === "/log-today" || normalized === "/past-data" || normalized === "/settings";
+}
+
+function pathForRoute(route: AppRoute): string {
+  if (route === "hello") {
+    return "/hello";
+  }
+  if (route === "log-today") {
+    return "/log-today";
+  }
+  if (route === "past-data") {
+    return "/past-data";
+  }
+  return "/settings";
+}
+
+function routeToTab(route: AppRoute): "hello" | "entry" | "week" | "settings" {
+  if (route === "log-today") {
+    return "entry";
+  }
+  if (route === "past-data") {
+    return "week";
+  }
+  return route;
+}
 
 export function App() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const initialLocale = detectInitialLocale();
   const i18n = createI18n(initialLocale);
   const initialThemePreference = detectInitialThemePreference();
@@ -63,7 +119,7 @@ export function App() {
   const [toasts, setToasts] = createSignal<ToastItem[]>([]);
   const [isReady, setIsReady] = createSignal(false);
   const [signInEnabled, setSignInEnabled] = createSignal(false);
-  const [activeTab, setActiveTab] = createSignal<"entry" | "week" | "settings">("entry");
+  const activeRoute = createMemo<AppRoute>(() => routeFromPathname(location.pathname));
   const [ratingValue, setRatingValue] = createSignal("5");
   const [chartPoints, setChartPoints] = createSignal<RatingPoint[]>([]);
   const [chartRefreshToken, setChartRefreshToken] = createSignal(0);
@@ -121,7 +177,7 @@ export function App() {
     setTheme(nextTheme);
     setChartRefreshToken((value) => value + 1);
 
-    if (shouldRefreshWeekChart(activeTab())) {
+    if (shouldRefreshWeekChart(routeToTab(activeRoute()))) {
       await refreshWeeklyChart();
     }
   };
@@ -135,7 +191,7 @@ export function App() {
     persistLocale(nextLocale);
     setLocale(nextLocale);
 
-    if (activeTab() === "week") {
+    if (routeToTab(activeRoute()) === "week") {
       await refreshWeeklyChart();
     }
   };
@@ -409,6 +465,18 @@ export function App() {
     void initGateGoogleAuth(sequence);
   });
 
+  createEffect(() => {
+    if (!isKnownPathname(location.pathname)) {
+      navigate("/hello", { replace: true });
+    }
+  });
+
+  createEffect(() => {
+    if (activeRoute() === "hello" && selectedBackend() !== null) {
+      navigate("/log-today", { replace: true });
+    }
+  });
+
   const handleSignIn = async (): Promise<void> => {
     const currentAdapter = adapter();
     if (!currentAdapter?.requestSignIn) {
@@ -427,17 +495,30 @@ export function App() {
     }
   };
 
-  const handleEntryTab = (): void => {
-    setActiveTab("entry");
+  const navigateToRoute = (route: AppRoute): void => {
+    navigate(pathForRoute(route));
   };
 
-  const handleWeekTab = async (): Promise<void> => {
-    setActiveTab("week");
-    await generateWeeklyChartOnDemand();
+  createEffect(() => {
+    if (activeRoute() === "past-data") {
+      void generateWeeklyChartOnDemand();
+    }
+  });
+
+  const handleHelloTab = (): void => {
+    navigateToRoute("hello");
+  };
+
+  const handleEntryTab = (): void => {
+    navigateToRoute("log-today");
+  };
+
+  const handleWeekTab = (): void => {
+    navigateToRoute("past-data");
   };
 
   const handleSettingsTab = (): void => {
-    setActiveTab("settings");
+    navigateToRoute("settings");
   };
 
   const handleSubmitRating = async (event: SubmitEvent): Promise<void> => {
@@ -465,7 +546,7 @@ export function App() {
       setRatingValue("");
       setStatus(t("status.ratingSaved"));
 
-      if (shouldRefreshWeekChart(activeTab())) {
+      if (shouldRefreshWeekChart(routeToTab(activeRoute()))) {
         await refreshWeeklyChart();
       }
     } catch (error) {
@@ -632,12 +713,21 @@ export function App() {
               supportedLocales={SUPPORTED_LOCALES}
               t={t}
               theme={theme()}
-              pageLabel={activeTab() === "entry" ? t("tabs.entry") : activeTab() === "week" ? t("tabs.week") : t("tabs.settings")}
+              pageLabel={
+                activeRoute() === "hello"
+                  ? "Hello"
+                  : activeRoute() === "log-today"
+                    ? t("tabs.entry")
+                    : activeRoute() === "past-data"
+                      ? t("tabs.week")
+                      : t("tabs.settings")
+              }
               isConnected={isReady()}
               showSignIn={!isReady()}
               signInLabel={t(resolveSignInLabelKey(isReady()))}
               signInDisabled={isReady() || !signInEnabled()}
-              activeTab={activeTab()}
+              activeTab={routeToTab(activeRoute())}
+              helloLabel="Hello"
               entryLabel={t("tabs.entry")}
               weekLabel={t("tabs.week")}
               settingsLabel={t("tabs.settings")}
@@ -657,15 +747,21 @@ export function App() {
               onInstall={() => {
                 void handleInstall();
               }}
+              onHelloClick={handleHelloTab}
               onEntryClick={handleEntryTab}
-              onWeekClick={() => {
-                void handleWeekTab();
-              }}
+              onWeekClick={handleWeekTab}
               onSettingsClick={handleSettingsTab}
             />
 
+            <section id="hello-view" class={`view${activeRoute() === "hello" ? "" : " hidden"}`}>
+              <div class="card">
+                <p class="label">Hello</p>
+                <p class="status">{isReady() ? t("status.connected") : t("status.clickSignIn", { signIn: t("auth.signIn") })}</p>
+              </div>
+            </section>
+
             <EntryForm
-              visible={activeTab() === "entry"}
+              visible={activeRoute() === "log-today"}
               label={t("form.question")}
               saveLabel={t("form.save")}
               value={ratingValue()}
@@ -678,7 +774,7 @@ export function App() {
             />
 
             <WeekChartCard
-              visible={activeTab() === "week"}
+              visible={activeRoute() === "past-data"}
               title={t("chart.title")}
               ariaLabel={t("chart.ariaLabel")}
               emptyLabel={t("chart.empty")}
@@ -687,7 +783,7 @@ export function App() {
             />
 
             <SettingsView
-              visible={activeTab() === "settings"}
+              visible={activeRoute() === "settings"}
               languageLabel={t("settings.language")}
               themeLabel={t("settings.theme")}
               reminderEnabledLabel={t("settings.reminderEnabled")}

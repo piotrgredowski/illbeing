@@ -18,6 +18,7 @@ test("parseRatingInput accepts only integer values from 1 to 10", () => {
 });
 
 test("week chart refresh only occurs for week tab", () => {
+  expect(shouldRefreshWeekChart("hello")).toBe(false);
   expect(shouldRefreshWeekChart("entry")).toBe(false);
   expect(shouldRefreshWeekChart("week")).toBe(true);
   expect(shouldRefreshWeekChart("settings")).toBe(false);

@@ -11,7 +11,7 @@ export function parseRatingInput(rawValue: string): number | null {
   return rating;
 }
 
-export function shouldRefreshWeekChart(activeTab: "entry" | "week" | "settings"): boolean {
+export function shouldRefreshWeekChart(activeTab: "hello" | "entry" | "week" | "settings"): boolean {
   return activeTab === "week";
 }
 
