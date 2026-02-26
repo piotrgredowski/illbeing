@@ -1,6 +1,6 @@
 # being better
 
-A static web app (TypeScript -> JavaScript) deployed to GitHub Pages.
+A static web app (TypeScript -> JavaScript) deployed to Cloudflare Pages.
 
 ## What the app does
 
@@ -41,7 +41,7 @@ A static web app (TypeScript -> JavaScript) deployed to GitHub Pages.
    - `https://www.googleapis.com/auth/drive.file`
    - `https://www.googleapis.com/auth/spreadsheets`
 5. Add your domain info/links (required for production publishing):
-   - Homepage URL (GitHub Pages URL)
+   - Homepage URL (Cloudflare-hosted URL)
    - Privacy Policy URL
    - Terms of Service URL (recommended)
 
@@ -52,7 +52,8 @@ A static web app (TypeScript -> JavaScript) deployed to GitHub Pages.
 3. Add **Authorized JavaScript origins**:
    - `http://localhost:5173`
    - `http://127.0.0.1:5173` (optional but recommended)
-   - `https://<your-user>.github.io`
+   - `https://preview.better-being.app`
+   - `https://better-being.app`
 4. Save and copy the client ID (`...apps.googleusercontent.com`).
 
 Note: this app uses GIS token popup flow. You do not manually configure `storagerelay://...` redirect.
@@ -63,41 +64,44 @@ Note: this app uses GIS token popup flow. You do not manually configure `storage
 - For public use: switch to `In production` on OAuth consent screen.
 - Google may require verification for sensitive scopes before full public availability.
 
-## 2. GitHub setup (required)
+## 2. Cloudflare + GitHub CD setup (required)
 
-### 2.1 Add repository variable
+### 2.1 Create Cloudflare Pages projects and domains
 
-This repo's deploy workflow expects a GitHub **variable** (not secret):
+Run once (with Wrangler installed and authenticated):
 
-1. Repo -> `Settings` -> `Secrets and variables` -> `Actions` -> `Variables`.
-2. Create variables:
-   - Name: `VITE_GOOGLE_CLIENT_ID`
-   - Value: your Google OAuth client ID
-   - Name: `VITE_APP_URL`
-   - Value: your deployed app URL (for example: `https://notaproblem.dev/gh/being-better`)
+```bash
+bunx wrangler pages project create better-being-preview --production-branch main
+bunx wrangler pages project create better-being-prod --production-branch main
 
-### 2.2 Ensure workflow exists
+bunx wrangler pages project domain add better-being-preview preview.better-being.app
+bunx wrangler pages project domain add better-being-prod better-being.app
+```
 
-Workflow file:
+### 2.2 Add GitHub Actions secrets
 
-- `.github/workflows/deploy-gh-pages.yml`
+Repo -> `Settings` -> `Secrets and variables` -> `Actions` -> `Secrets`.
 
-It does:
+Create secrets:
 
-- install deps with Bun
-- build with:
-  - `VITE_GOOGLE_CLIENT_ID` from `${{ vars.VITE_GOOGLE_CLIENT_ID }}`
-  - `VITE_APP_URL` from `${{ vars.VITE_APP_URL }}` (used to derive Vite base path)
-- deploy `dist/` to `gh-pages` branch
+- `CLOUDFLARE_API_TOKEN`
+- `CLOUDFLARE_ACCOUNT_ID`
+- `VITE_GOOGLE_CLIENT_ID`
+- `VITE_APP_URL_PREVIEW` = `https://preview.better-being.app`
+- `VITE_APP_URL_PROD` = `https://better-being.app`
 
-### 2.3 Enable Pages
+### 2.3 Workflows in this repo
 
-1. Repo -> `Settings` -> `Pages`.
-2. Source: `Deploy from a branch`.
-3. Branch: `gh-pages` and folder `/ (root)`.
-4. Save.
+Workflow files:
 
-After next push to `main`, GitHub Action should publish and Pages URL will be available.
+- `.github/workflows/deploy-preview.yml`
+- `.github/workflows/deploy-prod.yml`
+
+Behavior:
+
+- `main` push -> build and deploy to `better-being-preview` (`preview.better-being.app`)
+- `vX.Y.Z` tag push -> deploy to `better-being-prod` (`better-being.app`)
+- prod deploy runs only when the selected tag is the newest SemVer tag
 
 ## 3. Local development
 
@@ -147,7 +151,7 @@ Fix: enable API in the same project used by OAuth client, then wait a few minute
 
 Cause: current app origin is not listed in OAuth client authorized JS origins.
 
-Fix: add exact origin (`http://localhost:5173` or your Pages origin).
+Fix: add exact origin (`http://localhost:5173`, `https://preview.better-being.app`, or `https://better-being.app`).
 
 ### Popup closes / `popup_closed`
 
@@ -168,7 +172,7 @@ Frontend now supports pluggable adapters selected by `VITE_DATA_BACKEND`:
 - `google` (default): browser-only Google OAuth + Drive/Sheets.
 - `local_api`: frontend calls local Bun backend REST API.
 
-### 7.1 Production (GitHub Pages)
+### 7.1 Production (Cloudflare Pages)
 
 Use default `google` mode (or set `VITE_DATA_BACKEND=google`).
 
